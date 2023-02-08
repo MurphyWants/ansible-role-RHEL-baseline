@@ -1,0 +1,61 @@
+---
+#===========================================
+# CONFIGURE REPOS
+#===========================================
+- name: Add EPEL Repository
+  ansible.builtin.yum_repository:
+    name: EPEL
+    description: 'Extra Packages for Enterprise Linux $releasever - $basearch'
+    #baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    metalink: https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
+    enabled: true
+    gpgcheck: true
+    keepcache: 0
+
+#===========================================
+# Almalinux 9 - CONFIGURE REPOS
+#===========================================
+- block: 
+  - name: Add EPEL Repository
+    ansible.builtin.yum_repository:
+      name: appstream
+      description: 'AlmaLinux $releasever - AppStream'
+      #baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+      mirrorlist: https://mirrors.almalinux.org/mirrorlist/$releasever/appstream
+      enabled: true
+      gpgcheck: true
+      keepcache: 0
+  when:
+    - TODO HOST IS ALMALINUX 9
+
+
+#===========================================
+# INSTALL PACKAGES
+#===========================================
+
+# STIG ID: RHEL-08-010010
+- name: DNF - Update all packages
+  ansible.builtin.dnf:
+    state: latest
+    name: '*'
+    update_cache: true
+
+- name: DNF - Install rsyslog, krb5-workstation
+  ansible.builtin.dnf:
+    state: present
+    name: 
+      - rsyslog # STIG ID: RHEL-08-010070
+      - krb5-workstation # STIG ID: RHEL-08-010162
+      - policycoreutils # STIG ID: RHEL-08-010171
+
+# krb5-server (https://centos.pkgs.org/7/centos-aarch64/krb5-server-1.15.1-50.el7.aarch64.rpm.html)
+## Kerberos is a network authentication system. The krb5-server package
+## contains the programs that must be installed on a Kerberos 5 key
+## distribution center (KDC).  If you are installing a Kerberos 5 KDC,
+## you need to install this package (in other words, most people should
+## NOT install this package).
+# krb5-workstation (https://centos.pkgs.org/7/centos-x86_64/krb5-workstation-1.15.1-50.el7.x86_64.rpm.html)
+## Kerberos is a network authentication system. The krb5-workstation
+## package contains the basic Kerberos programs (kinit, klist, kdestroy,
+## kpasswd). If your network uses Kerberos, this package should be
+## installed on every workstation.

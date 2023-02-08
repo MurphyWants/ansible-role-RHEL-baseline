@@ -1,0 +1,12 @@
+---
+  - name: gather_facts
+    gather_facts:
+
+# Plan
+## PKG_RPM_configure.yml 
+### - Configures RPM Repos
+### - Configures RPM gpg keys
+### - Updates all RPM packages
+### - Installs baseline apps
+### - Removes non-baseline apps
+
